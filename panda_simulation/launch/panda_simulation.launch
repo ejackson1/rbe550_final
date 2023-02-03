@@ -1,0 +1,50 @@
+<launch>
+  <!-- Load robot description onto parameter server -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find franka_description)/robots/panda_arm_hand.urdf.xacro" />
+
+  <!-- Necessary transformation frames -->
+  <node name="map_world_frame" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 map world 100" />
+  <node name="world_panda_frame" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 world panda_link0 100" />
+
+  <!-- Spawn the robot in gazebo -->
+  <node name="spawn_franka_urdf" pkg="gazebo_ros" type="spawn_model"
+  	args="-param robot_description -urdf -model robot" output="screen" />
+
+  <!-- Launch gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false" />
+  </include>
+
+  <!-- Launch controllers -->
+  <include file="$(find panda_moveit_controller)/launch/main.launch" />
+
+  <!-- Finally, launch moveit -->
+  <include file="$(find panda_moveit_config)/launch/move_group.launch">
+    <remap from="joint_states" to="panda/joint_states" />
+  </include>
+  
+  <!-- send table urdf to param server -->
+  <!-- <param name="table_description" textfile="$(find sdf)/table/table.urdf" /> -->
+  
+  <!-- push table_description to factory and spawn robot in gazebo -->
+  <!-- <node name="spawn_table" pkg="gazebo_ros" type="spawn_model" args="-urdf -param table_description -x 0.90 -Y 1.57079632679 -model Table" respawn="false" output="screen" /> -->
+  
+  <!-- send mustard urdf to param server -->
+  <param name="mustard_description" textfile="$(find sdf)/mustard/mustard.sdf" />
+  
+  <!-- push mustard_description to factory and spawn robot in gazebo -->
+  <node name="spawn_mustard" pkg="gazebo_ros" type="spawn_model" args="-sdf -param mustard_description -x 0.65 -y -0.5 -z 0.3 -model Mustard" respawn="false" output="screen" />
+  
+  <!-- send drill urdf to param server -->
+  <param name="drill_description" textfile="$(find sdf)/power_drill/power_drill.sdf" />
+  
+  <!-- push drill_description to factory and spawn robot in gazebo -->
+  <node name="spawn_drill" pkg="gazebo_ros" type="spawn_model" args="-sdf -param drill_description -x 0.65 -y 0.5 -z 0.3 -model Drill" respawn="false" output="screen" />
+  
+  <!-- send pudding_box urdf to param server -->
+  <param name="pudding_description" textfile="$(find sdf)/pudding_box/pudding_box.sdf" />
+  
+  <!-- push pudding_description to factory and spawn robot in gazebo -->
+  <node name="spawn_pudding" pkg="gazebo_ros" type="spawn_model" args="-sdf -param pudding_description -x 0.65 -z 0.34 -R 1.4 -P 2.1 -Y -1.3 -model Pudding" respawn="false" output="screen" />
+  
+</launch>

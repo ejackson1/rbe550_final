@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot name="Power Drill">
+
+  <link name="world"/>
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="power_drill"/>
+  </joint>
+  
+  <link name="power_drill">
+    <visual>
+      <geometry>
+        <mesh scale="1 1 1" filename="package://sdf/power_drill/textured.dae"/>
+      </geometry>
+    </visual>
+    <inertial>
+       <mass value="1"/>
+       <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+     </inertial>
+  </link>
+  
+</robot>
