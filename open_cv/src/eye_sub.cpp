@@ -2,7 +2,8 @@
 #include <image_transport/image_transport.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <cv_bridge/cv_bridge.h>
- 
+#include <sensor_msgs/image_encodings.h>
+
 // Author: Addison Sears-Collins
 // Website: https://automaticaddison.com
 // Description: A basic image subscriber for ROS in C++
@@ -18,13 +19,13 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
   try
   { 
    
-    // Convert the ROS message  
-    cv_ptr = cv_bridge::toCvCopy(msg); //, "bgr8");
+    // Convert the ROS message 
+    cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8); 
      
     // Store the values of the OpenCV-compatible image
     // into the current_frame variable
-    cv::Mat img_gray = cv_ptr->image;
-    //cv::cvtColor(cv_ptr->image, img_gray, cv::COLOR_BGR2GRAY);
+    cv::Mat img_gray;// = cv_ptr->image;
+    cv::cvtColor(cv_ptr->image, img_gray, cv::COLOR_BGR2GRAY);
      
     cv::Mat canny_output;
     cv::Canny(img_gray,canny_output,10,350);
@@ -32,7 +33,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
     cv::imshow("view", canny_output); 
      
     // Display frame for 30 milliseconds
-    cv::waitKey(1000);
+    cv::waitKey(30);
   }
   catch (cv_bridge::Exception& e)
   {
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
   image_transport::ImageTransport it(nh);
    
   // Subscribe to the /camera topic
-  image_transport::Subscriber sub = it.subscribe("/panda_camera/depth/image_raw", 1, imageCallback);
+  image_transport::Subscriber sub = it.subscribe("/panda_camera/rgb/image_raw", 1, imageCallback);
    
   // Make sure we keep reading new video frames by calling the imageCallback function
   ros::spin();
