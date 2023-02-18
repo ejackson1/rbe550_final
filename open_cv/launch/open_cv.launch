@@ -1,0 +1,8 @@
+<launch>
+  <node
+    pkg="open_cv"
+    type="eye_sub"
+    name="eye_sub"
+    output="screen"
+  />
+</launch>
