@@ -18,8 +18,8 @@
     -J panda_joint4 -2.2
     -J panda_joint5 0
     -J panda_joint6 2
-    -J panda_joint7 0.78539816
-    " output="screen" />
+    -J panda_joint7 0.78539816"
+     output="screen" />
 
   <!-- Launch gazebo -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">

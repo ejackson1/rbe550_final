@@ -1,0 +1,3 @@
+---
+float64[] angles
+std_msgs/Bool success
