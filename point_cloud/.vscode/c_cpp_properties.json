@@ -1,0 +1,36 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/sg/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/sg/catkin_ws/src/flatland/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_core/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_costmap_2d/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_cv/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_demos/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_filters/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_loader/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_octomap/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_pcl/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_ros/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_rviz_plugin/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_sdf/include/**",
+        "/home/sg/catkin_ws/src/grid_map/grid_map_visualization/include/**",
+        "/home/sg/catkin_ws/src/my_robot_controller/include/**",
+        "/home/sg/catkin_ws/src/rbe550_final/point_cloud/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

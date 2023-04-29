@@ -1,0 +1,8 @@
+<launch>
+  <node
+    pkg="point_cloud"
+    type="point_sub"
+    name="point_sub"
+    output="screen"
+  />
+</launch>
