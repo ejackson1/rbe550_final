@@ -68,7 +68,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
    
   try
   { 
-   
+    
     // Convert the ROS message 
     cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8); 
      
@@ -99,8 +99,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
   }
 }
 
-
- 
 int main(int argc, char **argv)
 {
   // The name of the node
@@ -113,7 +111,7 @@ int main(int argc, char **argv)
   image_transport::ImageTransport it(nh);
    
   // Subscribe to the /camera topic
-  image_transport::Subscriber sub = it.subscribe("/panda_camera/rgb/image_raw", 1, imageCallback);
+  image_transport::Subscriber sub = it.subscribe("/panda_camera/depth/points", 1, imageCallback);
 
   // Make sure we keep reading new video frames by calling the imageCallback function
   ros::spin();
