@@ -53,7 +53,6 @@ class MoveitArmClient:
             bool = Bool()
             bool.data = True
             if success.data == bool:
-                print("Moved to Pose")
                 return
             else:
                 return print(str(success.data.data) + ", unable to find a solution.")
@@ -146,40 +145,29 @@ if __name__ == "__main__":
     # m.is_arm_in_home_pos()
 
     # m.move_arm_angles([0, -0.3, 0,- 2.2, 0, 2, 0.78539816])
-    # goalT = np.array(([1, 0, 0, -2.3],
-    #                [0, -1, 0, 0],
-    #                [0, 0, -1, 2.],
-    #                [0, 0, 0, 1]))
-    
     goalT = np.array(([1, 0, 0, -2.3],
-                    [0, -1, 0, 0],
+                    [0, 1, 0, 0],
                     [0, 0, -1, 2.],
                     [0, 0, 0, 1]))
-
-    r = R.from_matrix(goalT[:3,:3])
-    quaternion = r.as_quat()
-
-    # print(quaterion)
     
+    r = R.from_matrix(goalT[:3,:3])
+    quaterion = r.as_quat()
+
+    print(quaterion)
 
     pose_goal = geometry_msgs.msg.Pose()
-    pose_goal.orientation.x = quaternion[0]
-    pose_goal.orientation.y = quaternion[1]
-    pose_goal.orientation.z = quaternion[2]
-    pose_goal.orientation.w = quaternion[3]
-    pose_goal.position.x = 0.5
-    pose_goal.position.y = 0.7 # meters
-    pose_goal.position.z = 0.5
-    # pose_goal.position.x = -0.5
-    # pose_goal.position.y = -0.5
-    # pose_goal.position.z = 0.3
-
-    print(pose_goal.position.x, pose_goal.position.y, pose_goal.position.z)
-    print("Requesting...")
+    pose_goal.orientation.x = quaterion[0]
+    pose_goal.orientation.y = quaterion[1]
+    pose_goal.orientation.z = quaterion[2]
+    pose_goal.orientation.w = quaterion[3]
+    pose_goal.position.x = 0.7
+    pose_goal.position.y = 0
+    pose_goal.position.z = 0.3
+    print("Requesting.. ")
     m.move_arm_EE(pose_goal)
 
     # Panda finger
-    # finger = 0.054
+    # finger = 0.03
     # m.move_gripper(finger)
 
     # impossible arm position test
