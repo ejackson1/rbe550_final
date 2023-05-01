@@ -47,7 +47,7 @@
   <param name="door_description" textfile="$(find sdf)/door/model.sdf" />
 
   <!-- push door_description to factory and spawn robot in gazebo -->
-  <node name="spawn_door" pkg="gazebo_ros" type="spawn_model" args="-sdf -param door_description -x 0.65 -y 0.4 -z 0.2 -model door" respawn="false" output="screen" />
+  <node name="spawn_door" pkg="gazebo_ros" type="spawn_model" args="-sdf -param door_description -x 0.65 -y 0.2 -z 0.2 -model door" respawn="false" output="screen" />
 
   <!-- send cube urdf to param server -->
   <param name="cube_description" textfile="$(find sdf)/wood_cube_5cm/model.sdf" />

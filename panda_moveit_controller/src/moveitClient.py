@@ -141,34 +141,42 @@ if __name__ == "__main__":
     # pose_goal.position.z = 0.7
     # print("Requesting.. ")
     # m.move_arm_EE(pose_goal)
+    
+    # Panda finger
+    finger = 0.054
+    m.move_gripper(finger)
 
     # m.is_arm_in_home_pos()
-
-    # m.move_arm_angles([0, -0.3, 0,- 2.2, 0, 2, 0.78539816])
-    goalT = np.array(([1, 0, 0, -2.3],
-                    [0, 1, 0, 0],
-                    [0, 0, -1, 2.],
-                    [0, 0, 0, 1]))
+    init = [1.383035467921843, -1.5321861096780172, -1.7988014563683827, -1.7618231679666039, -1.5773894447485612, 1.8261655306549525, -0.7708965437742608]
+    raised = [1.3500737407279217, -1.4550843634153168, -1.69247116861691, -1.8027891555282816, -1.486084602669667, 1.7387179465620655, -0.7726231094421925]
+    final = [2.7512211763054086, -1.3382896714015704, -1.6315563705904341, -1.6254787932375034, -1.322917349269738, 1.5876109064986714, 0.36519625187956084]
+    m.move_arm_angles(init)
+    m.move_gripper(0.01)
+    m.move_arm_angles(raised)
+    m.move_arm_angles(final)
+    m.move_gripper(finger)
+    # goalT = np.array(([1, 0, 0, -2.3],
+    #                 [0, 1, 0, 0],
+    #                 [0, 0, -1, 2.],
+    #                 [0, 0, 0, 1]))
     
-    r = R.from_matrix(goalT[:3,:3])
-    quaterion = r.as_quat()
+    # r = R.from_matrix(goalT[:3,:3])
+    # quaterion = r.as_quat()
 
-    print(quaterion)
+    # print(quaterion)
 
-    pose_goal = geometry_msgs.msg.Pose()
-    pose_goal.orientation.x = quaterion[0]
-    pose_goal.orientation.y = quaterion[1]
-    pose_goal.orientation.z = quaterion[2]
-    pose_goal.orientation.w = quaterion[3]
-    pose_goal.position.x = 0.7
-    pose_goal.position.y = 0
-    pose_goal.position.z = 0.3
-    print("Requesting.. ")
-    m.move_arm_EE(pose_goal)
+    # pose_goal = geometry_msgs.msg.Pose()
+    # pose_goal.orientation.x = quaterion[0]
+    # pose_goal.orientation.y = quaterion[1]
+    # pose_goal.orientation.z = quaterion[2]
+    # pose_goal.orientation.w = quaterion[3]
+    # pose_goal.position.x = 0.7
+    # pose_goal.position.y = 0
+    # pose_goal.position.z = 0.3
+    # print("Requesting.. ")
+    # m.move_arm_EE(pose_goal)
 
-    # Panda finger
-    # finger = 0.03
-    # m.move_gripper(finger)
+    
 
     # impossible arm position test
     # pose_goal = geometry_msgs.msg.Pose()
