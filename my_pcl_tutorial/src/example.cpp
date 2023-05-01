@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 // PCL specific includes
 #include <sensor_msgs/PointCloud2.h>
+#include <geometry_msgs/Point.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_cloud.h>
@@ -69,6 +70,24 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   centroid.get (c1);
   //pub5.publish (c1);
   std::cout << "Centroid c1: " << c1 << "\n";
+  
+  // create point cloud for centroid
+  /*
+  pcl::PointCloud<pcl::PointXYZ> cloud_c;
+  // Fill in the cloud data
+  cloud_c.width  = 1;
+  cloud_c.height = 1;
+  cloud_c.points.resize (cloud_c.width * cloud_c.height);
+  cloud_c[0].x = c1.x;
+  cloud_c[0].y = c1.y;
+  cloud_c[0].z = c1.z;
+  */
+  geometry_msgs::Point ros_c;
+  ros_c.x = c1.x;
+  ros_c.y = c1.y;
+  ros_c.z = c1.z;
+  pub5.publish (ros_c);
+  
 
   // Calculate surface normals on outliers
   // Create the normal estimation class, and pass the input dataset to it
@@ -122,7 +141,9 @@ main (int argc, char** argv)
   // Create a ROS publisher for the output model inliers
   pub4 = nh.advertise<pcl::PointCloud<pcl::Normal>> ("plc_normals", 1);
   
+  //pub5 = nh.advertise<pcl::PointCloud<pcl::PointXYZ>> ("plc_centroid", 1);
   //pub5 = nh.advertise<pcl::PointXYZ> ("plc_centroid", 1);
+  pub5 = nh.advertise<geometry_msgs::Point> ("plc_centroid", 1);
 
   // Spin
   ros::spin ();
