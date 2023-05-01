@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(my_pcl_tutorial)
+project(pcl)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -26,5 +26,5 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(example src/example.cpp)
-target_link_libraries(example ${catkin_LIBRARIES})
+add_executable(centroid_grab src/centroid_grab.cpp)
+target_link_libraries(centroid_grab ${catkin_LIBRARIES})

@@ -19,7 +19,6 @@ ros::Publisher pub1;
 ros::Publisher pub2;
 ros::Publisher pub3;
 ros::Publisher pub4;
-ros::Publisher pub5;
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
@@ -68,54 +67,11 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   }
   pcl::PointXYZ c1;
   centroid.get (c1);
-  //pub5.publish (c1);
-  std::cout << "Centroid c1: " << c1 << "\n";
-  
-  // create point cloud for centroid
-  /*
-  pcl::PointCloud<pcl::PointXYZ> cloud_c;
-  // Fill in the cloud data
-  cloud_c.width  = 1;
-  cloud_c.height = 1;
-  cloud_c.points.resize (cloud_c.width * cloud_c.height);
-  cloud_c[0].x = c1.x;
-  cloud_c[0].y = c1.y;
-  cloud_c[0].z = c1.z;
-  */
   geometry_msgs::Point ros_c;
   ros_c.x = c1.x;
   ros_c.y = c1.y;
   ros_c.z = c1.z;
-  pub5.publish (ros_c);
-  
-
-  // Calculate surface normals on outliers
-  // Create the normal estimation class, and pass the input dataset to it
-  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud (cloud_f.makeShared ());
-
-  // Create an empty kdtree representation, and pass it to the normal estimation object.
-  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
-  ne.setSearchMethod (tree);
-
-  // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-
-  // Use all neighbors in a sphere of radius 3cm
-  ne.setRadiusSearch (0.03);
-
-  // Compute the features
-  ne.compute (*cloud_normals);
-  
-  // cloud_normals->size () should have the same size as the input cloud->size ()*
-  
-  // Publish Surface Normals
-  pub4.publish (cloud_normals);
-  
-  std::cout << "Single Outlier x: " << cloud_f[0].x << "\n";
-
-  //pub5.publish (cloud_normals->points[1].normal_x);
+  pub4.publish (ros_c);
   return;
 }
 
@@ -123,7 +79,7 @@ int
 main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "my_pcl_tutorial");
+  ros::init (argc, argv, "pcl");
   ros::NodeHandle nh;
 
   // Create a ROS subscriber for the input point cloud
@@ -137,13 +93,9 @@ main (int argc, char** argv)
 
   // Create a ROS publisher for the output model inliers
   pub3 = nh.advertise<pcl::PointCloud<pcl::PointXYZ>> ("plc_outliers", 1);
-
-  // Create a ROS publisher for the output model inliers
-  pub4 = nh.advertise<pcl::PointCloud<pcl::Normal>> ("plc_normals", 1);
   
-  //pub5 = nh.advertise<pcl::PointCloud<pcl::PointXYZ>> ("plc_centroid", 1);
-  //pub5 = nh.advertise<pcl::PointXYZ> ("plc_centroid", 1);
-  pub5 = nh.advertise<geometry_msgs::Point> ("plc_centroid", 1);
+  // Create a ROS publisher for the centroids
+  pub4 = nh.advertise<geometry_msgs::Point> ("plc_centroid", 1);
 
   // Spin
   ros::spin ();
