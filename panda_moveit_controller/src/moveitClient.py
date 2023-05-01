@@ -2,7 +2,7 @@
 
 import rospy
 import geometry_msgs.msg
-from abstract_arm.srv import moveToPose, moveToAngles, grip, getJointAngles
+from panda_moveit_controller.srv import moveToPose, moveToAngles, grip, getJointAngles
 from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import tf2_ros
@@ -146,7 +146,7 @@ if __name__ == "__main__":
 
     # m.move_arm_angles([0, -0.3, 0,- 2.2, 0, 2, 0.78539816])
     goalT = np.array(([1, 0, 0, -2.3],
-                    [0, -1, 0, 0],
+                    [0, 1, 0, 0],
                     [0, 0, -1, 2.],
                     [0, 0, 0, 1]))
     
@@ -160,14 +160,14 @@ if __name__ == "__main__":
     pose_goal.orientation.y = quaterion[1]
     pose_goal.orientation.z = quaterion[2]
     pose_goal.orientation.w = quaterion[3]
-    pose_goal.position.x = -0.5
-    pose_goal.position.y = -0.5
+    pose_goal.position.x = 0.7
+    pose_goal.position.y = 0
     pose_goal.position.z = 0.3
     print("Requesting.. ")
     m.move_arm_EE(pose_goal)
 
     # Panda finger
-    # finger = 0.054
+    # finger = 0.03
     # m.move_gripper(finger)
 
     # impossible arm position test
