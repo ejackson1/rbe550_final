@@ -2,7 +2,7 @@
 
 import rospy
 import geometry_msgs.msg
-from abstract_arm.srv import moveToPose, moveToAngles, grip, getJointAngles
+from panda_moveit_controller.srv import moveToPose, moveToAngles, grip, getJointAngles
 from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import tf2_ros
@@ -145,25 +145,36 @@ if __name__ == "__main__":
     # m.is_arm_in_home_pos()
 
     # m.move_arm_angles([0, -0.3, 0,- 2.2, 0, 2, 0.78539816])
+    # goalT = np.array(([1, 0, 0, -2.3],
+    #                [0, -1, 0, 0],
+    #                [0, 0, -1, 2.],
+    #                [0, 0, 0, 1]))
+    
     goalT = np.array(([1, 0, 0, -2.3],
                     [0, -1, 0, 0],
                     [0, 0, -1, 2.],
                     [0, 0, 0, 1]))
-    
-    r = R.from_matrix(goalT[:3,:3])
-    quaterion = r.as_quat()
 
-    print(quaterion)
+    r = R.from_matrix(goalT[:3,:3])
+    quaternion = r.as_quat()
+
+    # print(quaterion)
+    
 
     pose_goal = geometry_msgs.msg.Pose()
-    pose_goal.orientation.x = quaterion[0]
-    pose_goal.orientation.y = quaterion[1]
-    pose_goal.orientation.z = quaterion[2]
-    pose_goal.orientation.w = quaterion[3]
-    pose_goal.position.x = -0.5
-    pose_goal.position.y = -0.5
-    pose_goal.position.z = 0.3
-    print("Requesting.. ")
+    pose_goal.orientation.x = quaternion[0]
+    pose_goal.orientation.y = quaternion[1]
+    pose_goal.orientation.z = quaternion[2]
+    pose_goal.orientation.w = quaternion[3]
+    pose_goal.position.x = -6.
+    pose_goal.position.y = -5.
+    pose_goal.position.z = 10.3
+    # pose_goal.position.x = -0.5
+    # pose_goal.position.y = -0.5
+   #  pose_goal.position.z = 0.3
+
+    print(pose_goal.position.x, pose_goal.position.y, pose_goal.position.z)
+    print("Requesting...")
     m.move_arm_EE(pose_goal)
 
     # Panda finger
