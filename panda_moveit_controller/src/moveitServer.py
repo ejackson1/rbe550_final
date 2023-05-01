@@ -54,24 +54,24 @@ class MoveItPlanner:
         self.TOLERANCE = 0.01 # 1 cm of accuracy
 
         # helpful debugging commands 
-        # print(rospy.get_namespace())
+        print(rospy.get_namespace())
 
-        # planning_frame = self.arm_group.get_planning_frame()
-        # print("============ Planning frame: %s" % planning_frame)
+        planning_frame = self.arm_group.get_planning_frame()
+        print("============ Planning frame: %s" % planning_frame)
 
         # # We can also print the name of the end-effector link for this group:
-        # eef_link = self.arm_group.get_end_effector_link()
-        # print("============ End effector link: %s" % eef_link)
+        eef_link = self.arm_group.get_end_effector_link()
+        print("============ End effector link: %s" % eef_link)
 
         # # We can get a list of all the groups in the robot:
-        # group_names = self.robot.get_group_names()
-        # print("============ Available Planning Groups:", self.robot.get_group_names())
+        group_names = self.robot.get_group_names()
+        print("============ Available Planning Groups:", self.robot.get_group_names())
 
         # # Sometimes for debugging it is useful to print the entire state of the
         # # robot:
-        # print("============ Printing robot state")
-        # print(self.robot.get_current_state())
-        # print("")
+        print("============ Printing robot state")
+        print(self.robot.get_current_state())
+        print("")
 
         rospy.loginfo("Ready to accept poses!")
 
@@ -104,6 +104,7 @@ class MoveItPlanner:
             self.arm_group.set_goal_position_tolerance(self.TOLERANCE)
             self.arm_group.set_pose_target(pose.pose)
             rospy.loginfo("Planning and going to waypoint")
+            # plan = self.arm_group.go(wait=True)
             self.arm_group.go(wait=True)
             self.arm_group.stop()
             self.get_cartesian_pose(self.arm_group)
@@ -111,6 +112,8 @@ class MoveItPlanner:
             # Return success to the service
             bool.data = True
             print("Success")
+
+            # self.arm_group.execute(plan, wait=True)
             return moveToPoseResponse(bool)
 
         except Exception as e: #something error'd, return a failure to the service

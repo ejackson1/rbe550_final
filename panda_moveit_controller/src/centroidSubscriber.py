@@ -8,9 +8,9 @@ from scipy.spatial.transform import Rotation as R
 
 def callback(centroid):
     print("Centroid Received by Subscriber!")
-    moveToCentroid(centroid.data)
+    moveTo(centroid.data)
 
-def moveToCentroid(data):
+def moveTo(data):
         m = MoveitArmClient(init_node=True)
     
         # goalT = np.array(([1, 0, 0, -2.3],
