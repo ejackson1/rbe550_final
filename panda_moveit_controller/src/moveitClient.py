@@ -53,6 +53,7 @@ class MoveitArmClient:
             bool = Bool()
             bool.data = True
             if success.data == bool:
+                print("Moved to Pose")
                 return
             else:
                 return print(str(success.data.data) + ", unable to find a solution.")
@@ -166,12 +167,12 @@ if __name__ == "__main__":
     pose_goal.orientation.y = quaternion[1]
     pose_goal.orientation.z = quaternion[2]
     pose_goal.orientation.w = quaternion[3]
-    pose_goal.position.x = -6.
-    pose_goal.position.y = -5.
-    pose_goal.position.z = 10.3
+    pose_goal.position.x = 0.5
+    pose_goal.position.y = 0.7 # meters
+    pose_goal.position.z = 0.5
     # pose_goal.position.x = -0.5
     # pose_goal.position.y = -0.5
-   #  pose_goal.position.z = 0.3
+    # pose_goal.position.z = 0.3
 
     print(pose_goal.position.x, pose_goal.position.y, pose_goal.position.z)
     print("Requesting...")
