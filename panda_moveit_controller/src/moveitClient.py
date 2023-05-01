@@ -2,7 +2,7 @@
 
 import rospy
 import geometry_msgs.msg
-from abstract_arm.srv import moveToPose, moveToAngles, grip, getJointAngles
+from panda_moveit_controller.srv import moveToPose, moveToAngles, grip, getJointAngles
 from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import tf2_ros
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     # m.is_arm_in_home_pos()
     # convert a rotation matrix into a quaternian w
-    m.move_arm_angles([0, -0.3, 0,- 2.2, 0, 2, 0.78539816])
+    m.move_arm_angles([-0.994837, 1.43117, 2.4783,-0.85521, -2.234, 0.85521, 0.22689])
 
     # Panda finger
     # finger = 0.0

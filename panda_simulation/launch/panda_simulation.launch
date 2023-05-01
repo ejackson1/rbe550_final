@@ -12,13 +12,13 @@
   <!-- Spawn the robot in gazebo -->
   <node name="spawn_franka_urdf" pkg="gazebo_ros" type="spawn_model"
   	args="-param robot_description -urdf -model robot
-    -J panda_joint1 0
-    -J panda_joint2 -0.3
-    -J panda_joint3 0
-    -J panda_joint4 -2.2
-    -J panda_joint5 0
-    -J panda_joint6 2
-    -J panda_joint7 0.78539816"
+    -J panda_joint1 -0.994837
+    -J panda_joint2 1.43117
+    -J panda_joint3 2.4783
+    -J panda_joint4 -0.85521
+    -J panda_joint5 -2.234
+    -J panda_joint6 0.85521
+    -J panda_joint7 0.22689"
      output="screen" />
 
   <!-- Launch gazebo -->
