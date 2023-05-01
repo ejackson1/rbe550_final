@@ -143,6 +143,7 @@ if __name__ == "__main__":
     # m.move_arm_EE(pose_goal)
 
     # m.is_arm_in_home_pos()
+<<<<<<< HEAD
 
     # m.move_arm_angles([0, -0.3, 0,- 2.2, 0, 2, 0.78539816])
     goalT = np.array(([1, 0, 0, -2.3],
@@ -168,6 +169,13 @@ if __name__ == "__main__":
 
     # Panda finger
     # finger = 0.03
+=======
+    # convert a rotation matrix into a quaternian w
+    m.move_arm_angles([-0.994837, 1.43117, 2.4783,-0.85521, -2.234, 0.85521, 0.22689])
+
+    # Panda finger
+    # finger = 0.0
+>>>>>>> f60bc6fddaebd714ee4fe6da20b6387fe739fe0d
     # m.move_gripper(finger)
 
     # impossible arm position test
