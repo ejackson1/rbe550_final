@@ -111,7 +111,7 @@ main (int argc, char** argv)
 
   // Create a ROS subscriber for the input point cloud
   ros::Subscriber sub = nh.subscribe ("/panda_camera/depth/points", 1, cloud_cb);
-  ros::Subscriber sub1 = nh.subscribe ("/gazebo/link_states", 1, transform);
+  // ros::Subscriber sub1 = nh.subscribe ("/gazebo/link_states", 1, transform);
 
   // Create a ROS publisher for the output model coefficients
   pub1 = nh.advertise<pcl_msgs::ModelCoefficients> ("plc_coefficients", 1);
@@ -126,7 +126,7 @@ main (int argc, char** argv)
   pub4 = nh.advertise<geometry_msgs::Point> ("plc_centroid", 1);
 
   // Create a ROS publisher for the centroids
-  pub5 = nh.advertise<geometry_msgs::Point> ("plc_world_centroid", 1);
+  // pub5 = nh.advertise<geometry_msgs::Point> ("plc_world_centroid", 1);
 
   // Spin
   ros::spin ();
