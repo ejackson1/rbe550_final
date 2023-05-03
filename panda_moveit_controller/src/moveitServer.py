@@ -54,14 +54,15 @@ class MoveItPlanner:
         self.TOLERANCE = 0.01 # 1 cm of accuracy
 
         # helpful debugging commands 
-        # print(rospy.get_namespace())
+        print(rospy.get_namespace())
 
-        # planning_frame = self.arm_group.get_planning_frame()
-        # print("============ Planning frame: %s" % planning_frame)
+        planning_frame = self.arm_group.get_planning_frame()
+        print("============ Planning frame: %s" % planning_frame)
 
-        # # We can also print the name of the end-effector link for this group:
-        # eef_link = self.arm_group.get_end_effector_link()
-        # print("============ End effector link: %s" % eef_link)
+        # We can also print the name of the end-effector link for this group:
+        # self.arm_group.set_end_effector_link("camera_link") this didn't work
+        eef_link = self.arm_group.get_end_effector_link()
+        print("============ End effector link: %s" % eef_link)
 
         # # We can get a list of all the groups in the robot:
         # group_names = self.robot.get_group_names()

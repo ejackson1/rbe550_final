@@ -175,7 +175,7 @@ if __name__ == "__main__":
     #m.move_arm_angles(init)
     goalT = np.array(([1, 0, 0, 0.5],
                       [0, -1, 0, -0.4],
-                      [0, 0, -1, 0.4],
+                      [0, 0, -1, 0.235],
                       [0, 0, 0, 1]))
     goalT = RZ(goalT,45)
     pose_goal = makePose(goalT)
@@ -188,8 +188,13 @@ if __name__ == "__main__":
 
     # Travel Through door
     #m.move_arm_angles(final)
-
-    # goalT = np.array(([1, 0, 0, -2.3],
+    goalT = np.array(([1, 0, 0, 0.5],
+                      [0, -1, 0, 0.4],
+                      [0, 0, -1, 0.27],
+                      [0, 0, 0, 1]))
+    goalT = RZ(goalT,45)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
   
     # Release
     m.move_gripper(finger)
