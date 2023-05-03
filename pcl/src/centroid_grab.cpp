@@ -14,11 +14,14 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/centroid.h>
+#include <pcl_ros/transforms.h>
 #include <gazebo_msgs/LinkStates.h>
 
-#include <tf2_ros/transform_listener.h>
+// #include <tf2_ros/transform_listener.h>
+#include <tf/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/Twist.h>
+
 
 ros::Publisher pub1;
 ros::Publisher pub2;
@@ -26,8 +29,10 @@ ros::Publisher pub3;
 ros::Publisher pub4;
 pcl::PointXYZ c1;
 
+
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
+  
   // Convert the sensor_msgs/PointCloud2 data to pcl/PointCloud
   pcl::PointCloud<pcl::PointXYZ> cloud;
   pcl::fromROSMsg (*input, cloud);
@@ -64,6 +69,40 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   extract.setNegative (true);
   extract.filter (cloud_f);
   pub3.publish (cloud_f);
+
+  // Transform
+  try
+  {
+    tf::StampedTransform transform;
+    tf::tfMessage tfMsg;
+    geometry_msgs::Transform geoMsg;
+    // listener1.lookupTransform();
+    
+    // listener_.lookupTransform("world", "panda_camera_optical_link",  
+    //                       ros::Time(0), transform);
+    pcl::PointCloud<pcl::PointXYZ> cloud_y;
+    // tfMsg.transforms.header = transform.
+    // transform.getOrigin()
+    // cout <<  transform;
+    geoMsg.translation.x = transform.getOrigin().getX();
+    geoMsg.translation.y = transform.getOrigin().getY();
+    geoMsg.translation.z = transform.getOrigin().getZ();
+    geoMsg.rotation.x = transform.getRotation().getX();
+    geoMsg.rotation.y = transform.getRotation().getY();
+    geoMsg.rotation.z = transform.getRotation().getZ();
+    geoMsg.rotation.w = transform.getRotation().getW();
+    // geoMsg.header.frame_id = "world";
+    // cout << transform;
+    
+    
+    // pcl_ros::transformPointCloud(cloud_f, cloud_y, geoMsg);
+
+  }
+  catch(tf::TransformException ex)
+  {
+    ROS_ERROR("%s",ex.what());
+  }
+  
   
   // centroid calculation of outliers
   pcl::CentroidPoint<pcl::PointXYZ> centroid;
@@ -88,6 +127,7 @@ main (int argc, char** argv)
   ros::init (argc, argv, "pcl");
   ros::NodeHandle nh;
 
+  tf::TransformListener listener_;
   // Create a ROS subscriber for the input point cloud
   ros::Subscriber sub = nh.subscribe ("/panda_camera/depth/points", 1, cloud_cb);
 
@@ -102,7 +142,6 @@ main (int argc, char** argv)
   
   // Create a ROS publisher for the centroids
   pub4 = nh.advertise<geometry_msgs::Point> ("plc_centroid", 1);
-  
   
   // Spin
   ros::spin ();

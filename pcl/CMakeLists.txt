@@ -27,4 +27,6 @@ include_directories(
 )
 
 add_executable(centroid_grab src/centroid_grab.cpp)
+add_executable(centroid_grab_class src/centroid_grab_class.cpp)
 target_link_libraries(centroid_grab ${catkin_LIBRARIES})
+target_link_libraries(centroid_grab_class ${catkin_LIBRARIES})
