@@ -51,7 +51,7 @@ class MoveItPlanner:
                                                 queue_size=20)
 
         
-        self.TOLERANCE = 0.01 # 1 cm of accuracy
+        self.TOLERANCE = 0.005 # 1 cm of accuracy
 
         # helpful debugging commands 
         print(rospy.get_namespace())
@@ -60,7 +60,7 @@ class MoveItPlanner:
         print("============ Planning frame: %s" % planning_frame)
 
         # We can also print the name of the end-effector link for this group:
-        # self.arm_group.set_end_effector_link("camera_link") this didn't work
+        self.arm_group.set_end_effector_link("panda_hand")
         eef_link = self.arm_group.get_end_effector_link()
         print("============ End effector link: %s" % eef_link)
 
