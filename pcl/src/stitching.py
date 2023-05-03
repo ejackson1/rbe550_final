@@ -5,8 +5,6 @@ import open3d
 from open3d import geometry, utility
 import numpy as np
 from ctypes import * # convert float to uint32
-import pcl
-import pcl.pcl_visualization
 from std_msgs.msg import Header
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs.point_cloud2 as pc2
