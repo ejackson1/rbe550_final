@@ -13,7 +13,7 @@ import sensor_msgs.point_cloud2 as pc2
 from tf import TransformListener 
 
 
-class PLC_segement():
+class PLC_stitch():
 
     def __init__(self) -> None:
         rospy.init_node("PLC_segement")
@@ -54,13 +54,16 @@ class PLC_segement():
             # print(f"Cloud: {open3d_cloud}")
             # print(f"Cloud type: {type(open3d_cloud)}")
             self.open3d_cloudINIT += open3d_cloud
+
+            # Try calculating centroid of current model
+            center = self.open3d_cloudINIT.get_center()
+            print(f"Center: {center}")
             
             ros_cloud = self.convertCloudFromOpen3dToRos(self.open3d_cloudINIT, frame_id=msg.header.frame_id)
             # print(f"ROS_cloud: {ros_cloud}")
             
             # self.plc_PC += msg
             rospy.set_param("/add_PCL", False)
-            print("Penis")
 
         # print(f"Data: {msg.height}")
             self.plc_pub.publish(ros_cloud)
@@ -145,5 +148,5 @@ class PLC_segement():
         return open3d_cloud
 
 if __name__ == "__main__":
-    open3d_a = PLC_segement()
+    open3d_a = PLC_stitch()
     rospy.spin()
