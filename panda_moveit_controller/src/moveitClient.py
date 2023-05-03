@@ -9,6 +9,7 @@ import tf2_ros
 from math import pi, isclose
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+from tf import TransformListener
 
 class MoveitArmClient:
     def __init__(self, init_node=False) -> None:
@@ -25,12 +26,17 @@ class MoveitArmClient:
         self.home_joint_angles = panda_home_angles 
 
         self.tfBuffer = tf2_ros.Buffer()
-        listener = tf2_ros.TransformListener(self.tfBuffer)
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        
+        self.tf = TransformListener()
         rospy.sleep(1)
 
     def move_arm_EE(self, pose):
         # client side used to move the arm to a desired EE pose
 
+        position, quaternion = self.tf.lookupTransform("panda_link8", "panda_hand", rospy.Time())      
+        r = R.from_quat(quaternion)
+        print(f"r.as_matrix() {r.as_matrix()}")
         rospy.wait_for_service('/move_it_EE')
         try:
             c = rospy.ServiceProxy('/move_it_EE', moveToPose)
@@ -147,34 +153,56 @@ if __name__ == "__main__":
     m.move_gripper(finger)
 
     # m.is_arm_in_home_pos()
-    init = [1.383035467921843, -1.5321861096780172, -1.7988014563683827, -1.7618231679666039, -1.5773894447485612, 1.8261655306549525, -0.7708965437742608]
-    raised = [1.3500737407279217, -1.4550843634153168, -1.69247116861691, -1.8027891555282816, -1.486084602669667, 1.7387179465620655, -0.7726231094421925]
-    final = [2.7512211763054086, -1.3382896714015704, -1.6315563705904341, -1.6254787932375034, -1.322917349269738, 1.5876109064986714, 0.36519625187956084]
-    m.move_arm_angles(init)
-    m.move_gripper(0.01)
-    m.move_arm_angles(raised)
-    m.move_arm_angles(final)
-    m.move_gripper(finger)
-    # goalT = np.array(([1, 0, 0, -2.3],
-    #                 [0, 1, 0, 0],
-    #                 [0, 0, -1, 2.],
-    #                 [0, 0, 0, 1]))
+    # init = [1.383035467921843, -1.5321861096780172, -1.7988014563683827, -1.7618231679666039, -1.5773894447485612, 1.8261655306549525, -0.7708965437742608]
+    # raised = [1.3500737407279217, -1.4550843634153168, -1.69247116861691, -1.8027891555282816, -1.486084602669667, 1.7387179465620655, -0.7726231094421925]
+    # final = [2.7512211763054086, -1.3382896714015704, -1.6315563705904341, -1.6254787932375034, -1.322917349269738, 1.5876109064986714, 0.36519625187956084]
+    # m.move_arm_angles(init)
+    # m.move_gripper(0.01)
+    # m.move_arm_angles(raised)
+    # m.move_arm_angles(final)
+    # m.move_gripper(finger)
+
+
+    ## SAMPLE THE OBJECT ##
+    # above = [1.6277655291149733, -0.6689650263959646, -1.6114007512775324, -1.0976278432569169, -0.6839236503326411, 1.3581123615861692, -0.26391324763628177]
+    # side1 = [-0.9036232174447427, 0.9387217076437189, -0.3443887132520329, -0.4568491199601201, 0.5774867003031909, 1.1608607157663533, -0.9817923378382734]
+    # back = [-0.3293513564331274, 1.2267921399689152, -0.6024736774805026, -0.3545115312505338, 0.36794018560586483, 1.2982176920363218, -0.532883035080042]
+    # front = [0.40176078065650866, 1.6089636305493018, -2.1135970126266486, -2.210550977295161, 1.6577623563987096, 1.1094874967944062, -1.6894879191284895]
+
+    ##
+
+
+    goalT = np.array(([1, 0, 0, 0.5],
+                      [0, 1, 0, 0.5],
+                      [0, 0, 1, 0.5],
+                      [0, 0, 0, 1]))
     
-    # r = R.from_matrix(goalT[:3,:3])
-    # quaterion = r.as_quat()
 
-    # print(quaterion)
+    camera2pandahand = np.array(([ 0.70710678,  0.70710678,  0.        ],
+                                [-0.70710678,  0.70710678, -0.        ],
+                                [-0.,          0.,          1.        ]))
+    # goalT[:3,:3] = np.matmul(goalT[:3,:3], camera2pandahand)
+    
+    print(f"GoalT: {goalT}")
+    r = R.from_matrix(goalT[:3,:3])
+    
+    # [ 0.70710678  0.70710678  0.        ]
+    # [-0.70710678  0.70710678 -0.        ]
+    # [-0.          0.          1.        ]
+    quaterion = r.as_quat()
 
-    # pose_goal = geometry_msgs.msg.Pose()
-    # pose_goal.orientation.x = quaterion[0]
-    # pose_goal.orientation.y = quaterion[1]
-    # pose_goal.orientation.z = quaterion[2]
-    # pose_goal.orientation.w = quaterion[3]
-    # pose_goal.position.x = 0.7
-    # pose_goal.position.y = 0
-    # pose_goal.position.z = 0.3
-    # print("Requesting.. ")
-    # m.move_arm_EE(pose_goal)
+    print(quaterion)
+
+    pose_goal = geometry_msgs.msg.Pose()
+    pose_goal.orientation.x = quaterion[0]
+    pose_goal.orientation.y = quaterion[1]
+    pose_goal.orientation.z = quaterion[2]
+    pose_goal.orientation.w = quaterion[3]
+    pose_goal.position.x = goalT[-1,0]
+    pose_goal.position.y = goalT[-1,1]
+    pose_goal.position.z = goalT[-1,2]
+    print("Requesting.. ")
+    m.move_arm_EE(pose_goal)
 
     
 

@@ -4,10 +4,13 @@ import sys
 import rospy
 import moveit_commander
 import moveit_msgs.msg
+from moveit_msgs.msg import CollisionObject
+from shape_msgs.msg import SolidPrimitive, Mesh
 from std_msgs.msg import Float64
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from panda_moveit_controller.srv import moveToPose, moveToPoseResponse, moveToAngles, moveToAnglesResponse, grip, gripResponse, getJointAngles, getJointAnglesResponse
+from panda_moveit_controller.srv import sendPIUpdate
 from control_msgs.msg import GripperCommandActionGoal
 from std_msgs.msg import Bool
 
@@ -21,6 +24,8 @@ class MoveItPlanner:
         sAngs = rospy.Service('/move_it_angles', moveToAngles, self.move_arm_angle)
         sGrip = rospy.Service('/move_it_gripper', grip, self.moveGripper)
         sPose = rospy.Service('/get_joint_angles', getJointAngles, self.get_arm_pose)
+
+        sPlanningUpdate = rospy.Service('/update_PI', sendPIUpdate, self.updatePI)
         
         # Robot arm groups and information
         self.arm_name = "panda"
@@ -54,28 +59,34 @@ class MoveItPlanner:
         self.TOLERANCE = 0.01 # 1 cm of accuracy
 
         # helpful debugging commands 
-        # print(rospy.get_namespace())
+        print(rospy.get_namespace())
 
-        # planning_frame = self.arm_group.get_planning_frame()
-        # print("============ Planning frame: %s" % planning_frame)
+        planning_frame = self.arm_group.get_planning_frame()
+        print("============ Planning frame: %s" % planning_frame)
 
-        # # We can also print the name of the end-effector link for this group:
-        # eef_link = self.arm_group.get_end_effector_link()
-        # print("============ End effector link: %s" % eef_link)
+        # We can also print the name of the end-effector link for this group:
+        self.arm_group.set_end_effector_link("camera_link")
+        eef_link = self.arm_group.get_end_effector_link()
+        print("============ End effector link: %s" % eef_link)
 
-        # # We can get a list of all the groups in the robot:
-        # group_names = self.robot.get_group_names()
-        # print("============ Available Planning Groups:", self.robot.get_group_names())
+        # We can get a list of all the groups in the robot:
+        group_names = self.robot.get_group_names()
+        print("============ Available Planning Groups:", self.robot.get_group_names())
 
-        # # Sometimes for debugging it is useful to print the entire state of the
-        # # robot:
-        # print("============ Printing robot state")
-        # print(self.robot.get_current_state())
-        # print("")
+        # Sometimes for debugging it is useful to print the entire state of the
+        # robot:
+        print("============ Printing robot state")
+        print(self.robot.get_current_state())
+        print("")
 
         rospy.loginfo("Ready to accept poses!")
 
-   
+    def updatePI(self, co):
+
+        self.scene.add_object(co)
+
+
+
     def js_cb(self, js):
          # Global callback for joint states
         global joint_states
