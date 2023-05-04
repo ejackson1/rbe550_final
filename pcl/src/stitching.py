@@ -102,7 +102,6 @@ class PLC_stitch():
     def sendCO_2_PI(self, co):
         rospy.wait_for_service('/update_PI')
         
-<<<<<<< HEAD
         pass
     
     def add_pointcloud_collision_object(self, pointcloud, frame_id):
@@ -153,14 +152,12 @@ class PLC_stitch():
 
 
 
-=======
         try:
             c = rospy.ServiceProxy('/update_PI', sendPIUpdate)
 
             success = c(co)
         except Exception as e:
             print(e)
->>>>>>> e58cfba5499b7e6a3c025342357aeeae2f4bab21
 
 
     def plc_cb(self, msg):
@@ -168,11 +165,8 @@ class PLC_stitch():
         PLC_CB gives us a PointCloud2 Object that has already been segemented. We can add data points to this naively 
         """
         if rospy.get_param("/add_PCL") == True:
-<<<<<<< HEAD
-=======
             
             print(f"Origional PointCloud: {msg.header.frame_id}")
->>>>>>> e58cfba5499b7e6a3c025342357aeeae2f4bab21
             open3d_cloud = self.convertCloudFromRosToOpen3d(msg)
             # print(f"Cloud: {open3d_cloud}")
             # print(f"Cloud type: {type(open3d_cloud)}")
@@ -181,7 +175,6 @@ class PLC_stitch():
             # Try calculating centroid of current model
             self.center = self.open3d_cloudINIT.get_center()
             print(f"Center: {self.center}")
-<<<<<<< HEAD
             centerV = Vector3()
             centerV.x = self.center[0]
             centerV.y = self.center[1]
@@ -223,7 +216,6 @@ class PLC_stitch():
             # print(f"ROS_cloud: {ros_cloud}")
             
             rospy.set_param("/add_PCL", False)
-=======
             # center = self.open3d_cloudINIT.get_center()
             # print(f"Center: {center}")
             
@@ -238,16 +230,16 @@ class PLC_stitch():
 
             print(f"tpye points: {type(copied_o3dINIT.points)}")
             ## Try to seperate point clouds with DBSClustering
-            intvector = copied_o3dINIT.cluster_dbscan(eps=0.02, min_points=10, print_progress=True)
+            # intvector = copied_o3dINIT.cluster_dbscan(eps=0.02, min_points=10, print_progress=True)
 
             # print(f"IntVector: {intvector}")
 
-            pointList = utility.Vector3dVector()
-            for point, intvector in zip(copied_o3dINIT.points, intvector):
-                if intvector == 0:
-                    pointList.append(point)
+            # pointList = utility.Vector3dVector()
+            # for point, intvector in zip(copied_o3dINIT.points, intvector):
+            #     if intvector == 0:
+            #         pointList.append(point)
 
-            self.newPCL = geometry.PointCloud(points=pointList)
+            # self.newPCL = geometry.PointCloud(points=pointList)
 
 
             # print(f"copied_o3dINIT.points {len(copied_o3dINIT.points)}")
@@ -261,7 +253,6 @@ class PLC_stitch():
 
             rospy.set_param("/add_PCL", False)
 
->>>>>>> e58cfba5499b7e6a3c025342357aeeae2f4bab21
             self.plc_pub.publish(ros_cloud)
 
             # Try turning PC into Collision Object

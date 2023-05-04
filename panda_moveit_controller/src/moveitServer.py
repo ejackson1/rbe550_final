@@ -31,9 +31,7 @@ class MoveItPlanner:
         sPose = rospy.Service('/get_joint_angles', getJointAngles, self.get_arm_pose)
 
         sPlanningUpdate = rospy.Service('/update_PI', sendPIUpdate, self.updatePI)
-        
-        sPlanningUpdate = rospy.Service('/update_PI', sendPIUpdate, self.updatePI)
-        # Robot arm groups and information
+               # Robot arm groups and information
         self.arm_name = "panda"
         self.dof = 7
         print("Initalize MoveIt for " + self.arm_name + " in namespace " + rospy.get_namespace())
@@ -67,7 +65,7 @@ class MoveItPlanner:
         boxPose.pose.orientation.z = 0
         boxPose.pose.orientation.w = 1
         boxPose.header.frame_id = "world"
-        self.scene.add_box(name="box", pose=boxPose, size=(0.5,0.1,2))
+        self.scene.add_box(name="box", pose=boxPose, size=(0.5,0.1,4))
 
         self.planningscene = moveit_commander.PlanningScene()
         self.display_trajectory_publisher = rospy.Publisher(rospy.get_namespace() + 'move_group/display_planned_path',
