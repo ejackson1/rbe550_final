@@ -9,6 +9,9 @@ import tf2_ros
 from math import pi, isclose, sin, cos, radians
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+from geometry_msgs.msg import Vector3
+
+CENTROID = 0
 
 class MoveitArmClient:
     def __init__(self, init_node=False) -> None:
@@ -134,58 +137,111 @@ def makePose(goalT):
     return pose_goal
 
 def RX(goalT,angle):
+    # usage: goalT = RX(goalT,45)
     R_T = goalT[:3,:3]
     Rx = np.array(([1,0,0],
                    [0,cos(radians(angle)),-sin(radians(angle))],
                    [0,sin(radians(angle)),cos(radians(angle))]))
-    goalT[:3,:3] = R_T @ Rx
+    goalT[:3,:3] = Rx @ R_T
     return goalT
 
 def RY(goalT,angle):
+    # usage: goalT = RY(goalT,45)
     R_T = goalT[:3,:3]
     Ry = np.array(([cos(radians(angle)),0,sin(radians(angle))],
                    [0,1,0],
                    [-sin(radians(angle)),0,cos(radians(angle))]))
-    goalT[:3,:3] = R_T @ Ry
+    goalT[:3,:3] = Ry @ R_T
     return goalT
 
 def RZ(goalT,angle):
+    # usage: goalT = RZ(goalT,45)
     R_T = goalT[:3,:3]
     Rz = np.array(([cos(radians(angle)),-sin(radians(angle)),0],
                    [sin(radians(angle)),cos(radians(angle)),0],
                    [0,0,1]))
-    goalT[:3,:3] = R_T @ Rz
+    goalT[:3,:3] =  Rz @ R_T
     return goalT
 
+def envScan(goalT):
+    goalT = RX(goalT,-10)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
+    # Point cloud stitch current view
+    rospy.set_param("/add_PCL", True)
+    rospy.sleep(.5)
+    centroid = CENTROID
 
+    # Look 45 deg +X 
+    goalT = RX(goalT,55)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
+    # Point cloud stitch current view
+    rospy.set_param("/add_PCL", True)
+
+    # Look 45 deg +X 
+    goalT = RX(goalT,45)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
+    # Point cloud stitch current view
+    rospy.set_param("/add_PCL", True)
+
+    # Look 45 deg -Z 
+    goalT = RZ(goalT,-45)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
+    # Point cloud stitch current view
+    rospy.set_param("/add_PCL", True)
+
+    # Look 45 deg -X 
+    goalT = RX(goalT,-45)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
+    # Point cloud stitch current view
+    rospy.set_param("/add_PCL", True)
+
+    # Look 45 deg -X 
+    goalT = RX(goalT,-45)
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
+    # Point cloud stitch current view
+    rospy.set_param("/add_PCL", True)
+
+    return centroid
+
+def getCentroid(centroid):
+    CENTROID = centroid
 
 if __name__ == "__main__":
     m = MoveitArmClient(init_node=True)
+    rospy.Subscriber("/plc_centroid2", Vector3, getCentroid, queue_size=1)
  
-    # Panda finger
+    # Panda open fingers
     finger = 0.054
     m.move_gripper(finger)
 
-    # m.is_arm_in_home_pos()
-    # init = [1.383035467921843, -1.5321861096780172, -1.7988014563683827, -1.7618231679666039, -1.5773894447485612, 1.8261655306549525, -0.7708965437742608]
-    raised = [1.3500737407279217, -1.4550843634153168, -1.69247116861691, -1.8027891555282816, -1.486084602669667, 1.7387179465620655, -0.7726231094421925]
-    # final = [2.7512211763054086, -1.3382896714015704, -1.6315563705904341, -1.6254787932375034, -1.322917349269738, 1.5876109064986714, 0.36519625187956084]
-    
-    #init 
-    # goalT = np.array(([1, 0, 0, .2],
-    #                   [0, -1, 0, 0],
-    #                   [0, 0, -1, .7],
-    #                   [0, 0, 0, 1]))
-    # #goalT = RZ(goalT,45)
-    # pose_goal = makePose(goalT)
-    # m.move_arm_EE(pose_goal)
+    # Initial Position for scan
+    goalT = np.array(([1, 0, 0, 0.495],
+                      [0, -1, 0, -0.4],
+                      [0, 0, -1, 0.5],
+                      [0, 0, 0, 1]))
+
+    centroid = envScan(goalT)
+    print(f"centroid: {centroid}")
+
+    # move above cube
+    goalT = np.array(([1, 0, 0, 0.495],
+                      [0, -1, 0, -0.4],
+                      [0, 0, -1, 0.5],
+                      [0, 0, 0, 1]))
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
 
     # move fingers around cube
     goalT = np.array(([1, 0, 0, 0.495],
                       [0, -1, 0, -0.4],
                       [0, 0, -1, 0.125],
                       [0, 0, 0, 1]))
-    #goalT = RZ(goalT,45)
     pose_goal = makePose(goalT)
     m.move_arm_EE(pose_goal)
 
@@ -211,11 +267,10 @@ if __name__ == "__main__":
     # Release
     m.move_gripper(finger)
 
-    #reset 
-    # goalT = np.array(([1, 0, 0, .2],
-    #                   [0, -1, 0, 0],
-    #                   [0, 0, -1, .7],
-    #                   [0, 0, 0, 1]))
-    # goalT = RZ(goalT,45)
-    # pose_goal = makePose(goalT)
-    # m.move_arm_EE(pose_goal)
+    # Reset Arm
+    goalT = np.array(([1, 0, 0, 0.495],
+                      [0, -1, 0, -0.4],
+                      [0, 0, -1, 0.5],
+                      [0, 0, 0, 1]))
+    pose_goal = makePose(goalT)
+    m.move_arm_EE(pose_goal)
