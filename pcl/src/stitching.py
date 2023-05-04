@@ -18,6 +18,13 @@ from shape_msgs.msg import SolidPrimitive, Mesh
 from shape_msgs.msg import Mesh, MeshTriangle
 from geometry_msgs.msg import Pose, Point
 
+from moveit_msgs.msg import CollisionObject
+from shape_msgs.msg import SolidPrimitive, Mesh
+from shape_msgs.msg import Mesh, MeshTriangle
+from geometry_msgs.msg import Pose, Point
+import copy
+from panda_moveit_controller.srv import sendPIUpdate
+
 
 class PLC_stitch():
 
@@ -40,7 +47,62 @@ class PLC_stitch():
         rospy.sleep(0.5)
         print("Initlaized PCL Stitching Node")
 
+
+
+    def add_pointcloud_collision_object(self, pointcloud, frame_id):
+
+        mesh = Mesh()
+        vertices = []
+        triangles = []
+
+        for p in pc2.read_points(pointcloud):
+            vertices.append(Point(x=p[0], y=p[1], z=p[2]))
+
+        for i in range(0, len(vertices), 3):
+            triangle = MeshTriangle(vertex_indices=[i, i+1, i+2])
+            triangles.append(triangle)
+
+        mesh.vertices = vertices
+        mesh.triangles = triangles
+
+
+
+        # # Convert pointcloud to mesh
+        # mesh = Mesh()
+        # for p in pc2.read_points(pointcloud, skip_nans=True, field_names=("x", "y", "z")):
+        #     vertex = [p[0], p[1], p[2]]
+        #     mesh.vertices.append(vertex)
+
+        # # Create solid primitive for the mesh
+        # solid_primitive = SolidPrimitive()
+        # solid_primitive.type = SolidPrimitive.TRIANGLE_LIST
+        # solid_primitive.dimensions.append(0) # dummy value since TRIANGLE_LIST doesn't use this field
+        # solid_primitive.meshes.append(mesh)
+        base_pose= Pose()
+        base_pose.position.x = 0
+        base_pose.position.y = 0
+        base_pose.position.z = 0
+        base_pose.orientation.x = 0
+        base_pose.orientation.y = 0
+        base_pose.orientation.z = 0
+        base_pose.orientation.w = 1
+
+        # Create collision object
+        collision_object = CollisionObject()
+        collision_object.id = "pointcloud_object"
+        collision_object.header.frame_id = frame_id
+        collision_object.meshes.append(mesh)
+        collision_object.pose = base_pose
+        # collision_object.mesh_poses.append(Pose())
+        collision_object.operation = CollisionObject.ADD
+
+        # print(f"Collision Object: {collision_object.header}")
+        return collision_object
+    
+    def sendCO_2_PI(self, co):
+        rospy.wait_for_service('/update_PI')
         
+<<<<<<< HEAD
         pass
     
     def add_pointcloud_collision_object(self, pointcloud, frame_id):
@@ -91,6 +153,14 @@ class PLC_stitch():
 
 
 
+=======
+        try:
+            c = rospy.ServiceProxy('/update_PI', sendPIUpdate)
+
+            success = c(co)
+        except Exception as e:
+            print(e)
+>>>>>>> e58cfba5499b7e6a3c025342357aeeae2f4bab21
 
 
     def plc_cb(self, msg):
@@ -98,6 +168,11 @@ class PLC_stitch():
         PLC_CB gives us a PointCloud2 Object that has already been segemented. We can add data points to this naively 
         """
         if rospy.get_param("/add_PCL") == True:
+<<<<<<< HEAD
+=======
+            
+            print(f"Origional PointCloud: {msg.header.frame_id}")
+>>>>>>> e58cfba5499b7e6a3c025342357aeeae2f4bab21
             open3d_cloud = self.convertCloudFromRosToOpen3d(msg)
             # print(f"Cloud: {open3d_cloud}")
             # print(f"Cloud type: {type(open3d_cloud)}")
@@ -106,6 +181,7 @@ class PLC_stitch():
             # Try calculating centroid of current model
             self.center = self.open3d_cloudINIT.get_center()
             print(f"Center: {self.center}")
+<<<<<<< HEAD
             centerV = Vector3()
             centerV.x = self.center[0]
             centerV.y = self.center[1]
@@ -147,6 +223,45 @@ class PLC_stitch():
             # print(f"ROS_cloud: {ros_cloud}")
             
             rospy.set_param("/add_PCL", False)
+=======
+            # center = self.open3d_cloudINIT.get_center()
+            # print(f"Center: {center}")
+            
+            
+            
+            # Copy current model and find normals
+            copied_o3dINIT = copy.deepcopy(self.open3d_cloudINIT)
+            # # copied_o3dINIT.estimate_normals()
+            voxelCloud = copied_o3dINIT.voxel_down_sample(voxel_size=0.01)
+            # visualization.draw_geometries([voxelCloud], point_show_normal=True)
+            # print(f"Normals?: {np.asarray(voxelCloud.points)}")
+
+            print(f"tpye points: {type(copied_o3dINIT.points)}")
+            ## Try to seperate point clouds with DBSClustering
+            intvector = copied_o3dINIT.cluster_dbscan(eps=0.02, min_points=10, print_progress=True)
+
+            # print(f"IntVector: {intvector}")
+
+            pointList = utility.Vector3dVector()
+            for point, intvector in zip(copied_o3dINIT.points, intvector):
+                if intvector == 0:
+                    pointList.append(point)
+
+            self.newPCL = geometry.PointCloud(points=pointList)
+
+
+            # print(f"copied_o3dINIT.points {len(copied_o3dINIT.points)}")
+            # max_label = np.array(intvector).max()
+            # print(f"point cloud has {max_label + 1} clusters")
+            # colors = plt.get_cmap("tab20")(np.array(intvector) / (max_label if max_label > 0 else 1))
+            # colors[np.array(intvector) < 0] = 0
+            # copied_o3dINIT.colors = utility.Vector3dVector(colors[:, :3])
+            # visualization.draw_geometries([self.newPCL])
+            ros_cloud = self.convertCloudFromOpen3dToRos(self.open3d_cloudINIT, frame_id=msg.header.frame_id)
+
+            rospy.set_param("/add_PCL", False)
+
+>>>>>>> e58cfba5499b7e6a3c025342357aeeae2f4bab21
             self.plc_pub.publish(ros_cloud)
 
             # Try turning PC into Collision Object
