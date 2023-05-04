@@ -9,6 +9,7 @@ import tf2_ros
 from math import pi, isclose, sin, cos, radians
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+from tf import TransformListener
 
 class MoveitArmClient:
     def __init__(self, init_node=False) -> None:
@@ -25,12 +26,17 @@ class MoveitArmClient:
         self.home_joint_angles = panda_home_angles 
 
         self.tfBuffer = tf2_ros.Buffer()
-        listener = tf2_ros.TransformListener(self.tfBuffer)
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        
+        self.tf = TransformListener()
         rospy.sleep(1)
 
     def move_arm_EE(self, pose):
         # client side used to move the arm to a desired EE pose
 
+        position, quaternion = self.tf.lookupTransform("panda_link8", "panda_hand", rospy.Time())      
+        r = R.from_quat(quaternion)
+        print(f"r.as_matrix() {r.as_matrix()}")
         rospy.wait_for_service('/move_it_EE')
         try:
             c = rospy.ServiceProxy('/move_it_EE', moveToPose)
