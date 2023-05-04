@@ -11,8 +11,6 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 from geometry_msgs.msg import Vector3
 
-CENTROID = 0
-
 class MoveitArmClient:
     def __init__(self, init_node=False) -> None:
 
@@ -171,6 +169,8 @@ def envScan(goalT):
     rospy.set_param("/add_PCL", True)
     rospy.sleep(.5)
     centroid = CENTROID
+    print(f"CENTROID: {centroid}")
+
 
     # Look 45 deg +X 
     goalT = RX(goalT,55)
@@ -210,6 +210,7 @@ def envScan(goalT):
     return centroid
 
 def getCentroid(centroid):
+    global CENTROID
     CENTROID = centroid
 
 if __name__ == "__main__":
@@ -217,7 +218,7 @@ if __name__ == "__main__":
     rospy.Subscriber("/plc_centroid2", Vector3, getCentroid, queue_size=1)
  
     # Panda open fingers
-    finger = 0.054
+    finger = 0.055
     m.move_gripper(finger)
 
     # Initial Position for scan
@@ -238,13 +239,17 @@ if __name__ == "__main__":
     m.move_arm_EE(pose_goal)
 
     # move fingers around cube
-    goalT = np.array(([1, 0, 0, 0.495],
-                      [0, -1, 0, -0.4],
-                      [0, 0, -1, 0.125],
+    goalT = np.array(([1, 0, 0, centroid.x],
+                      [0, -1, 0, centroid.y],
+                      [0, 0, -1, centroid.z+.078],
                       [0, 0, 0, 1]))
     pose_goal = makePose(goalT)
     m.move_arm_EE(pose_goal)
 
+    # goalT = np.array(([1, 0, 0, centroid.x-0.088],
+    #                     [0, -1, 0, centroid.y+0.1],
+    #                     [0, 0, -1, centroid.z + 0.081],
+    #                     [0, 0, 0, 1]))
     # pick up 
     m.move_gripper(0.01)
     goalT = np.array(([1, 0, 0, 0.495],
