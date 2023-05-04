@@ -51,6 +51,9 @@ class MoveItPlanner:
         # Common moveit setup
         self.arm_group = moveit_commander.MoveGroupCommander(self.arm_group_name)
         self.scene = moveit_commander.PlanningSceneInterface()
+        
+        
+        
         self.display_trajectory_publisher = rospy.Publisher(rospy.get_namespace() + 'move_group/display_planned_path',
                                                 moveit_msgs.msg.DisplayTrajectory,
                                                 queue_size=20)

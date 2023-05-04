@@ -107,30 +107,30 @@ class PLC_stitch():
             self.center = self.open3d_cloudINIT.get_center()
             print(f"Center: {self.center}")
             centerV = Vector3()
-            centerV.x = centerV[0]
-            centerV.y = centerV[1]
-            centerV.z = centerV[2]
+            centerV.x = self.center[0]
+            centerV.y = self.center[1]
+            centerV.z = self.center[2]
             self.plc_pub2.publish(centerV)
 
             # Copy current model and find normals
             copied_o3dINIT = copy.deepcopy(self.open3d_cloudINIT)
             # # copied_o3dINIT.estimate_normals()
-            voxelCloud = copied_o3dINIT.voxel_down_sample(voxel_size=0.01)
+            # voxelCloud = copied_o3dINIT.voxel_down_sample(voxel_size=0.01)
             # visualization.draw_geometries([voxelCloud], point_show_normal=True)
             # print(f"Normals?: {np.asarray(voxelCloud.points)}")
             
             print(f"tpye points: {type(copied_o3dINIT.points)}")
             ## Try to seperate point clouds with DBSClustering
-            intvector = copied_o3dINIT.cluster_dbscan(eps=0.02, min_points=10, print_progress=True)
+            # intvector = copied_o3dINIT.cluster_dbscan(eps=0.02, min_points=10, print_progress=True)
             
             # print(f"IntVector: {intvector}")
             
-            pointList = utility.Vector3dVector()
-            for point, intvector in zip(copied_o3dINIT.points, intvector):
-                if intvector == 0:
-                    pointList.append(point)
+            # pointList = utility.Vector3dVector()
+            # for point, intvector in zip(copied_o3dINIT.points, intvector):
+            #     if intvector == 0:
+            #         pointList.append(point)
                 
-            self.newPCL = geometry.PointCloud(points=pointList)
+            # self.newPCL = geometry.PointCloud(points=pointList)
 
             
 
@@ -141,7 +141,7 @@ class PLC_stitch():
             # colors = plt.get_cmap("tab20")(np.array(intvector) / (max_label if max_label > 0 else 1))
             # colors[np.array(intvector) < 0] = 0
             # copied_o3dINIT.colors = utility.Vector3dVector(colors[:, :3])
-            visualization.draw_geometries([self.newPCL])
+            # visualization.draw_geometries([self.newPCL])
 
             ros_cloud = self.convertCloudFromOpen3dToRos(self.open3d_cloudINIT, frame_id=msg.header.frame_id)
             # print(f"ROS_cloud: {ros_cloud}")
@@ -150,8 +150,8 @@ class PLC_stitch():
             self.plc_pub.publish(ros_cloud)
 
             # Try turning PC into Collision Object
-            co = self.add_pointcloud_collision_object(ros_cloud, frame_id="world")
-            self.sendCO_2_PI(co)
+            # co = self.add_pointcloud_collision_object(ros_cloud, frame_id="world")
+            # self.sendCO_2_PI(co)
         
     def convertCloudFromOpen3dToRos(self, open3d_cloud, frame_id="world"):
         # The data structure of each point in ros PointCloud2: 16 bits = x + y + z + rgb
