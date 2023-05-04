@@ -65,11 +65,7 @@ class MoveItPlanner:
         print("============ Planning frame: %s" % planning_frame)
 
         # We can also print the name of the end-effector link for this group:
-<<<<<<< HEAD
         self.arm_group.set_end_effector_link("panda_hand")
-=======
-        self.arm_group.set_end_effector_link("camera_link")
->>>>>>> a9cbc1bfa4bd9e27c0d31a09a1f6eddcb5ace034
         eef_link = self.arm_group.get_end_effector_link()
         print("============ End effector link: %s" % eef_link)
 
