@@ -1,8 +1,15 @@
-Running the simulation: roslaunch panda_simulation panda_simulation.launch
-Installing potentially missing dependencies (run outside the src folder of the workspace): rosdep install --from-paths --ignore-src ./ -y
+Requirements:
+*RosNoetic
+*Python3
+Download all required dependancies
 
-Note that the simulation starts paused to give the controllers time to connect to the robot, which prevents the robot from potentially falling over once the simulation starts
+Running:
+roslaunch panda_simulation panda_simulation.launch
+rviz rviz : add planenr, and point cloud2, subscribe to outliers_2
+rosrun panda_moveit_controller moveitServer.py
+rosrun pcl centroid_grab_class
+rosrun pcl stitching.py
+rosrun panda_moveit_controller moveitClient.py
 
-Tutorials:
-C++: https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html
-Python: https://ros-planning.github.io/moveit_tutorials/doc/move_group_python_interface/move_group_python_interface_tutorial.html
+Bugs/Notes
+* The Gazeebo dynamics make grasping somewhat unreliable and some poses cause the cube to fall
