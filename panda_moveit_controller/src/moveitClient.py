@@ -261,7 +261,7 @@ if __name__ == "__main__":
     # pick up 
     m.move_gripper(0.005)
     goalT = np.array(([1, 0, 0, 0.495],
-                      [0, -1, 0, -0.4],
+                      [0, -1, 0, -0.3],
                       [0, 0, -1, 0.25],
                       [0, 0, 0, 1]))
     pose_goal = makePose(goalT)
