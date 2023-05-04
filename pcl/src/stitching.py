@@ -156,8 +156,8 @@ class PLC_stitch():
             self.plc_pub.publish(ros_cloud)
 
             # Try turning PC into Collision Object
-            co = self.add_pointcloud_collision_object(ros_cloud, frame_id="world")
-            self.sendCO_2_PI(co)
+            # co = self.add_pointcloud_collision_object(ros_cloud, frame_id="world")
+            # self.sendCO_2_PI(co)
         
     def convertCloudFromOpen3dToRos(self, open3d_cloud, frame_id="world"):
         # The data structure of each point in ros PointCloud2: 16 bits = x + y + z + rgb
