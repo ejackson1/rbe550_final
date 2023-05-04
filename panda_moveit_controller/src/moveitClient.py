@@ -237,6 +237,7 @@ if __name__ == "__main__":
                       [0, 0, 0, 1]))
     pose_goal = makePose(goalT)
     m.move_arm_EE(pose_goal)
+    m.move_gripper(finger)
 
     # move fingers around cube
     goalT = np.array(([1, 0, 0, centroid.x],
@@ -245,19 +246,21 @@ if __name__ == "__main__":
                       [0, 0, 0, 1]))
     pose_goal = makePose(goalT)
     m.move_arm_EE(pose_goal)
+    m.move_gripper(finger)
 
     # goalT = np.array(([1, 0, 0, centroid.x-0.088],
     #                     [0, -1, 0, centroid.y+0.1],
     #                     [0, 0, -1, centroid.z + 0.081],
     #                     [0, 0, 0, 1]))
     # pick up 
-    m.move_gripper(0.01)
+    m.move_gripper(0.005)
     goalT = np.array(([1, 0, 0, 0.495],
                       [0, -1, 0, -0.4],
                       [0, 0, -1, 0.25],
                       [0, 0, 0, 1]))
     pose_goal = makePose(goalT)
     m.move_arm_EE(pose_goal)
+    m.move_gripper(0.005)
 
     # Travel Through door
     #m.move_arm_angles(final)
@@ -273,9 +276,9 @@ if __name__ == "__main__":
     m.move_gripper(finger)
 
     # Reset Arm
-    goalT = np.array(([1, 0, 0, 0.495],
-                      [0, -1, 0, -0.4],
-                      [0, 0, -1, 0.5],
-                      [0, 0, 0, 1]))
-    pose_goal = makePose(goalT)
-    m.move_arm_EE(pose_goal)
+    # goalT = np.array(([1, 0, 0, 0.495],
+    #                   [0, -1, 0, -0.4],
+    #                   [0, 0, -1, 0.5],
+    #                   [0, 0, 0, 1]))
+    # pose_goal = makePose(goalT)
+    # m.move_arm_EE(pose_goal)
