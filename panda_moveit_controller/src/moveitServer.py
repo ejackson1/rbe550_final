@@ -3,18 +3,23 @@
 import sys
 import rospy
 import moveit_commander
+
 import moveit_msgs.msg
-from std_msgs.msg import Float64
-from geometry_msgs.msg import Pose
+from std_msgs.msg import Float64, Header
+from geometry_msgs.msg import Pose, PoseStamped
 from sensor_msgs.msg import JointState
 from panda_moveit_controller.srv import moveToPose, moveToPoseResponse, moveToAngles, moveToAnglesResponse, grip, gripResponse, getJointAngles, getJointAnglesResponse
 from control_msgs.msg import GripperCommandActionGoal
 from std_msgs.msg import Bool
+from moveit_msgs.msg import CollisionObject, PlanningScene
+from panda_moveit_controller.srv import sendPIUpdate, sendPIUpdateResponse
 
 class MoveItPlanner:
     def __init__(self) -> None:     
         # Initialize nodes and service
         rospy.init_node("move_group_interface", anonymous=True)
+
+        self.pub_planning_scene = rospy.Publisher('/move_group/monitored_planning_scene', PlanningScene, queue_size=10)
 
         # MoveIt Services with custom messages
         sEE = rospy.Service('/move_it_EE', moveToPose, self.move_arm)
@@ -22,6 +27,7 @@ class MoveItPlanner:
         sGrip = rospy.Service('/move_it_gripper', grip, self.moveGripper)
         sPose = rospy.Service('/get_joint_angles', getJointAngles, self.get_arm_pose)
         
+        sPlanningUpdate = rospy.Service('/update_PI', sendPIUpdate, self.updatePI)
         # Robot arm groups and information
         self.arm_name = "panda"
         self.dof = 7
@@ -46,24 +52,37 @@ class MoveItPlanner:
         # Common moveit setup
         self.arm_group = moveit_commander.MoveGroupCommander(self.arm_group_name)
         self.scene = moveit_commander.PlanningSceneInterface()
+
+        boxPose = PoseStamped()
+        boxPose.pose.position.x = 0.1
+        boxPose.pose.position.y = 0.3
+        boxPose.pose.position.z = 0
+        boxPose.pose.orientation.x = 0
+        boxPose.pose.orientation.y = 0
+        boxPose.pose.orientation.z = 0
+        boxPose.pose.orientation.w = 1
+        boxPose.header.frame_id = "world"
+        self.scene.add_box(name="box", pose=boxPose, size=(0.5,0.1,2))
+
+        self.planningscene = moveit_commander.PlanningScene()
         self.display_trajectory_publisher = rospy.Publisher(rospy.get_namespace() + 'move_group/display_planned_path',
                                                 moveit_msgs.msg.DisplayTrajectory,
                                                 queue_size=20)
 
-        
-        self.TOLERANCE = 0.005 # 1 cm of accuracy
+        eef_link = self.arm_group.get_end_effector_link()
+        self.TOLERANCE = 0.01 # 1 cm of accuracy
 
         # helpful debugging commands 
-        print(rospy.get_namespace())
+        # print(rospy.get_namespace())
 
-        planning_frame = self.arm_group.get_planning_frame()
-        print("============ Planning frame: %s" % planning_frame)
+        # planning_frame = self.arm_group.get_planning_frame()
+        # print("============ Planning frame: %s" % planning_frame)
 
-        # We can also print the name of the end-effector link for this group:
-        self.arm_group.set_end_effector_link("panda_hand")
-        eef_link = self.arm_group.get_end_effector_link()
-        print("============ End effector link: %s" % eef_link)
-
+        # # We can also print the name of the end-effector link for this group:
+        # self.arm_group.set_end_effector_link("panda_hand")
+        
+        # print("============ End effector link: %s" % eef_link)
+        # 
         # # We can get a list of all the groups in the robot:
         # group_names = self.robot.get_group_names()
         # print("============ Available Planning Groups:", self.robot.get_group_names())
@@ -76,7 +95,32 @@ class MoveItPlanner:
 
         rospy.loginfo("Ready to accept poses!")
 
-   
+
+    def updatePI(self, co):
+        # header = Header()
+        # header.frame_id = "world"
+        # co.header = header
+        # print(f"type {co.co}")
+        # self.planningscene.
+        # self.scene.applyCollisionObject(co.co)
+
+        # self.pub_planning_scenePub.
+        planning_scene = PlanningScene()
+        # planning_scene.world.collision_objects.
+        
+        self.scene.add_object(co.co)
+        # self.planningscene.world.collision_objects.append(co.co)
+        # planning_scene.is_diff = True
+        
+        # self.pub_planning_scene.publish(planning_scene)
+        # self.planningscene.world.collision_objects.append(co.co)
+
+        # self.planningscene.world.collision_objects
+        success = Bool()
+        success.data = True
+        
+        return sendPIUpdateResponse(success)
+
     def js_cb(self, js):
          # Global callback for joint states
         global joint_states
@@ -132,7 +176,7 @@ class MoveItPlanner:
             # Report what the current joint angles are
             joint_current = self.arm_group.get_current_joint_values()
             joints = [x for x in msg.angles]
-            rospy.loginfo("Current joint values are: {}. \n Attempting to correct them!".format(joint_current))
+            rospy.loginfo("Current joiAttachedCollisionObjectnt values are: {}. \n Attempting to correct them!".format(joint_current))
             rospy.loginfo("\n Sending joint angles: {}".format(msg.angles))
 
             # Send to desired joint angles, stop when finished, report cartesian pose
