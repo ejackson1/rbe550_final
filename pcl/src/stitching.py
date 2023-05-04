@@ -5,14 +5,11 @@ import open3d
 from open3d import geometry, utility, visualization
 import numpy as np
 from ctypes import * # convert float to uint32
-<<<<<<< HEAD
-=======
-
->>>>>>> a9cbc1bfa4bd9e27c0d31a09a1f6eddcb5ace034
 from std_msgs.msg import Header
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs.point_cloud2 as pc2
-from tf import TransformListener 
+from tf import TransformListener
+from geometry_msgs.msg import Vector3
 import copy
 import matplotlib.pyplot as plt
 
@@ -29,6 +26,7 @@ class PLC_stitch():
 
         rospy.Subscriber("/plc_outliers", PointCloud2, self.plc_cb, queue_size=10)
         self.plc_pub = rospy.Publisher("/plc_outliers2", PointCloud2, queue_size=10)
+        self.plc_pub2 = rospy.Publisher("/plc_centroid2", Vector3, queue_size=1)
 
         self.plc_PC = PointCloud2()
         self.plc_PC.header.frame_id = "world"
@@ -108,6 +106,11 @@ class PLC_stitch():
             # Try calculating centroid of current model
             self.center = self.open3d_cloudINIT.get_center()
             print(f"Center: {self.center}")
+            centerV = Vector3()
+            centerV.x = centerV[0]
+            centerV.y = centerV[1]
+            centerV.z = centerV[2]
+            self.plc_pub2.publish(centerV)
 
             # Copy current model and find normals
             copied_o3dINIT = copy.deepcopy(self.open3d_cloudINIT)
