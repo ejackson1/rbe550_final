@@ -8,7 +8,15 @@ from ctypes import * # convert float to uint32
 from std_msgs.msg import Header
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs.point_cloud2 as pc2
-from tf import TransformListener 
+from tf import TransformListener
+from geometry_msgs.msg import Vector3
+
+from moveit_msgs.msg import CollisionObject
+from shape_msgs.msg import SolidPrimitive, Mesh
+from shape_msgs.msg import Mesh, MeshTriangle
+from geometry_msgs.msg import Pose, Point
+import copy
+from panda_moveit_controller.srv import sendPIUpdate
 
 from moveit_msgs.msg import CollisionObject
 from shape_msgs.msg import SolidPrimitive, Mesh
@@ -25,6 +33,7 @@ class PLC_stitch():
 
         rospy.Subscriber("/plc_outliers", PointCloud2, self.plc_cb, queue_size=10)
         self.plc_pub = rospy.Publisher("/plc_outliers2", PointCloud2, queue_size=10)
+        self.plc_pub2 = rospy.Publisher("/plc_centroid2", Vector3, queue_size=1)
 
         self.plc_PC = PointCloud2()
         self.plc_PC.header.frame_id = "world"
@@ -114,12 +123,13 @@ class PLC_stitch():
             self.open3d_cloudINIT += open3d_cloud
 
             # Try calculating centroid of current model
-            self.center = self.open3d_cloudINIT.get_center()
-            print(f"Center: {self.center}")
-            # center = self.open3d_cloudINIT.get_center()
-            # print(f"Center: {center}")
-            
-            
+            center = self.open3d_cloudINIT.get_center()
+            print(f"Center: {center}")
+            centerV = Vector3()
+            centerV.x = center[0]
+            centerV.y = center[1]
+            centerV.z = center[2]
+            self.plc_pub2.publish(centerV)
             
             # Copy current model and find normals
             copied_o3dINIT = copy.deepcopy(self.open3d_cloudINIT)
